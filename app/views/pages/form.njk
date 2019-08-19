@@ -1,0 +1,115 @@
+{% extends "layouts/main.njk" %}
+
+{%- block body -%}
+    Form
+
+
+    <form id="form" method="POST" action="{{ route('add') }}" enctype="multipart/form-data">
+        <div class="form-group">
+            <input type="text" name="profile[name]" class="form-control" placeholder="Imię" />
+            <div class="invalid-feedback"></div>
+            <div class="valid-feedback"></div>
+        </div>
+
+        <input type="text" name="profile[surname]" class="form-control" placeholder="Nazwisko" /> 
+        <div class="invalid-feedback"></div>
+        <br />
+
+        <input type="text" name="books[]" class="form-control" placeholder="Ksiązka 1" /> 
+        <div class="invalid-feedback"></div>
+        <br />
+
+        <input type="text" name="books[]" class="form-control" placeholder="Ksiązka 1" />
+        <div class="invalid-feedback"></div>
+        <br />
+
+        <input type="text" name="books[]" class="form-control" placeholder="Ksiązka 1" />
+        <div class="invalid-feedback"></div>
+        <br />
+
+        <input type="file" name="avatar" class="form-control" />
+        <div class="invalid-feedback"></div>
+        <br />
+
+        <button type="submit" class="btn btn-outline-success">Wyślij</button>
+    </form>
+
+{%- endblock -%}
+
+{% block scripts %}
+    {{ super() }}
+
+    <script>
+        $(function() {
+            var $form = $('#form');
+
+            var formRequestErrorUI = function($form, errors) {
+                $form.find('input, textarea, select').removeClass('is-invalid').addClass('is-valid');
+
+                errors.forEach(function(error, key) {
+                    var $control = findInputFromPath(error.path, $form);
+
+                    $control.removeClass('id-valid').addClass('is-invalid').next('.invalid-feedback').html(
+                        $('<span>').html(error.message)
+                    );
+                });
+            }
+
+            var findInputFromPath = function(path, $parent) {
+                $parent = $parent || $('body');
+
+                var selectorIndexed = path.map(function(value, key) {
+                    return key > 0 ? `[${ value }]` : value; 
+                }).join("");
+
+                var selectorUnindexed = path.map(function(value, key) {
+                    var isNumeric = !isNaN(Number(parseFloat(value)));
+                    var isLastElem = (path.length - 1) == key;
+
+                    if(isLastElem && isNumeric) {
+                        return '[]';
+                    }
+
+                    return key > 0 ? `[${ value }]` : value; 
+                }).join("");
+
+                // Try to find indexed elem
+                var $indexed = $parent.find(`[name="${ selectorIndexed }"]`);
+
+                if($indexed.length) {
+                    return $indexed;
+                }
+
+                // Try to find unindexed elems
+                var $unindexed = $parent.find(`[name="${ selectorUnindexed }"]`).eq(path[path.length - 1]);
+
+                if($unindexed.length) {
+                    return $unindexed;
+                }
+
+                // Empty object on fail
+                return $();
+            }
+
+
+            $form.submit(function(e) {
+                e.preventDefault();
+
+                var formData = new FormData($form[0]);
+
+                axios.post($form.attr('action'), formData)
+                     .then(function(response) {
+                        console.log(response);
+                     })
+                     .catch(function(data) {
+                        var response = data.response;
+
+                        // FormRequestError probably
+                        if(response.status == 400) {
+                            formRequestErrorUI($form, response.data.errors)
+                        }    
+                     })
+            });
+        });
+    </script>
+{% endblock %}

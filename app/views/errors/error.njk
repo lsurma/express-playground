@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Error</title>
+
+    <style>
+    pre {
+        margin : 0; padding : 0;
+    }
+    .trace { 
+        margin: 0; padding: 5px 10px; 
+        margin-top : 5px;
+        margin-bottom : 5px;
+        color: #aaa; background-color: #222;
+        text-shadow: 0 1px 0 #000;
+        border-bottom: 1px solid #555;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.4) inset, 0 0 20px rgba(0,0,0,0.2) inset;
+        font: 14px/16px 'Courier New', Courier, 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace;
+	}
+
+    .error {
+        background: rgba(160, 0, 0, 1);
+        color: #FFF;
+    }
+    </style>
+</head>
+    <body>
+        <h4>{{ error.message }}</h4>
+
+        {% for callsite in callsites %}
+            {{ callsite.getTypeNameSafely() }}.{{ callsite.getFunctionNameSanitized() }} 
+            <span title="{{ callsite.getFileName() }}"> ({{ callsite.getRelativeFileName() }} Line: {{ callsite.getLineNumber() }} Col: {{ callsite.getColumnNumber() }} )<span> 
+            <br />
+
+            {% if sourceContexts[loop.index0].line %}
+            <div class="trace">
+                {% if sourceContexts[loop.index0].pre %}
+                    <pre>{{ sourceContexts[loop.index0].pre | join('\n') }}</pre>
+                {% endif %}
+
+                <pre class="error">{{ sourceContexts[loop.index0].line }}</pre>
+
+                {% if sourceContexts[loop.index0].post %}
+                    <pre>{{ sourceContexts[loop.index0].post | join('\n') }}</pre>
+                {% endif %}
+            </div>
+            {% endif %}
+
+        {% endfor %}
+    </body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ asset('styles/styles.css') }}" />
+
+    <title>Hello, world!</title>
+  </head>
+  <body>
+  
+    <div class="container">
+        <header class="blog-header py-3">
+            <div class="row flex-nowrap align-items-center">
+            <div class="col-4">
+                <a class="blog-header-logo text-dark" href="#">Logo</a>
+            </div>
+            <div class="col-auto d-flex ml-auto align-items-center">
+                {% if not req.isAuthenticated() %}
+                  <a class="btn btn-sm btn-outline-primary mr-2" href="{{ route('auth.login') }}">Logowanie</a>
+                  <a class="btn btn-sm btn-outline-secondary" href="{{ route('auth.register') }}">Rejestracja</a>
+                {% else %}
+                  <span>Zalogowany jako: <b>{{ req.user.login }}</b></span>
+                {% endif %}
+            </div>
+            </div>
+        </header>
+
+    </div>
+  
+
+    <main>
+        <div class="container">
+        {%- block body -%}{%- endblock -%}
+        </div>
+    </main>
+    <script src="{{ asset('scripts/index.js') }}"></script>
+    {%- block scripts -%}{%- endblock -%}
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>
